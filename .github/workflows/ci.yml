@@ -1,0 +1,27 @@
+name: Frontend CI & Asset Verification
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Validate Core Files
+      run: |
+        test -f index.html || exit 1
+        test -f app.js || exit 1
+        test -f style.css || exit 1
+        echo "Core static web studio assets verified successfully!"

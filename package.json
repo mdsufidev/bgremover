@@ -1,0 +1,31 @@
+{
+  "name": "pixcut-studio-frontend",
+  "version": "1.0.0",
+  "description": "Enterprise AI Background Remover & Magic Erase Studio Frontend",
+  "main": "index.html",
+  "scripts": {
+    "start": "python serve.py",
+    "serve": "npx serve .",
+    "dev": "python serve.py"
+  },
+  "keywords": [
+    "background-remover",
+    "ai",
+    "canvas",
+    "image-processing",
+    "magic-erase",
+    "chroma-key",
+    "birefnet",
+    "react-component"
+  ],
+  "author": "Md Sufiyan <sufi11729@gmail.com> (https://github.com/mdsufidev)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdsufidev/bgremover.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mdsufidev/bgremover/issues"
+  },
+  "homepage": "https://github.com/mdsufidev/bgremover#readme"
+}
