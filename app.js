@@ -11,11 +11,11 @@
 const API_BASE = window.API_BASE_URL || (
     window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:8080/api/v1'
-        : 'https://bg-remover-backend.onrender.com/api/v1'
+        : 'https://bgremoverbackend-anvb.onrender.com/api/v1'
 );
 
-// Cloudflare GPU AI Engine Tunnel Endpoint (NVIDIA CUDA Acceleration)
-const AI_ENGINE_URL = localStorage.getItem('ai_engine_url') || window.AI_ENGINE_URL || 'https://remote-motherboard-olympus-ron.trycloudflare.com';
+// Production AI Engine Endpoint (Render Cloud)
+const AI_ENGINE_URL = localStorage.getItem('ai_engine_url') || window.AI_ENGINE_URL || 'https://bgremover-aiengine.onrender.com';
 window.setAiEngineUrl = function(url) {
     if (url) {
         localStorage.setItem('ai_engine_url', url.trim());
