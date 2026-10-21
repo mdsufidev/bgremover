@@ -1,17 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixCut Studio — AI Background Remover &amp; Canvas Editor</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN with class-based Dark Mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        darkbg: '#0b0f19',
+                        darksurface: '#111726',
+                        darkcard: '#151d30',
+                        darkborder: '#1e293b'
+                    },
                     fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
                         mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', 'monospace']
                     }
                 }
@@ -22,96 +41,120 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#fafafa] text-zinc-900 min-h-screen flex flex-col antialiased selection:bg-zinc-900 selection:text-white">
+<body class="bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-200 relative overflow-x-hidden">
+
+    <!-- Ambient Subtle Glow (Linear / Stripe aesthetic) -->
+    <div class="ambient-glow"></div>
 
     <!-- Minimalist Top Navigation -->
-    <header class="sticky top-0 z-40 bg-white border-b border-zinc-200">
+    <header class="sticky top-0 z-40 glass-header">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <!-- Brand -->
+            
+            <!-- Brand & Status -->
             <div class="flex items-center gap-3">
-                <a href="#remover" class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 rounded-md bg-zinc-900 text-white flex items-center justify-center font-bold text-xs">
-                        P
+                <a href="#remover" class="flex items-center gap-2.5 group">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-bold text-xs shadow-sm shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-200">
+                        <i data-lucide="scissors" class="w-3.5 h-3.5"></i>
                     </div>
-                    <span class="text-sm font-bold tracking-tight text-zinc-900">PixCut</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm font-bold tracking-tight text-slate-900 dark:text-white">PixCut</span>
+                        <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 tracking-wider">
+                            Studio
+                        </span>
+                    </div>
                 </a>
-                <span class="hidden sm:inline-block text-[11px] font-medium px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 border border-zinc-200">
-                    Studio &amp; API
-                </span>
+
+                <!-- Live Engine Health Dot -->
+                <div class="hidden sm:flex items-center gap-1.5 pl-2 border-l border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="font-medium">AI GPU Ready</span>
+                </div>
             </div>
 
             <!-- Nav Links -->
-            <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-zinc-600">
-                <a href="#remover" class="hover:text-zinc-900 transition-colors duration-150">Studio</a>
-                <button id="btn-nav-pricing" class="hover:text-zinc-900 transition-colors duration-150 flex items-center gap-1">
+            <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600 dark:text-slate-400">
+                <a href="#remover" class="hover:text-slate-900 dark:hover:text-white transition-colors duration-150">Studio</a>
+                <button id="btn-nav-pricing" class="hover:text-slate-900 dark:hover:text-white transition-colors duration-150 flex items-center gap-1">
                     <span>Pricing</span>
+                    <span class="text-[9px] px-1 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold">Pro ₹499</span>
                 </button>
-                <a href="#api-section" class="hover:text-zinc-900 transition-colors duration-150">API Docs</a>
-                <a href="http://localhost:8080/swagger-ui/index.html" target="_blank" class="hover:text-zinc-900 transition-colors duration-150 flex items-center gap-1">
+                <a href="#api-section" class="hover:text-slate-900 dark:hover:text-white transition-colors duration-150">API Docs</a>
+                <a href="http://localhost:8080/swagger-ui/index.html" target="_blank" class="hover:text-slate-900 dark:hover:text-white transition-colors duration-150 flex items-center gap-1">
                     <span>Swagger</span>
-                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+                    <i data-lucide="arrow-up-right" class="w-3 h-3 text-slate-400"></i>
                 </a>
             </nav>
 
-            <!-- User Auth Controls -->
-            <div class="flex items-center gap-2.5">
+            <!-- User Auth & Controls -->
+            <div class="flex items-center gap-2">
+                
+                <!-- Dark / Light Mode Toggle Button -->
+                <button id="btn-theme-toggle" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors" title="Toggle Light / Dark mode">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+
                 <!-- Guest View -->
                 <div id="nav-guest" class="flex items-center gap-2">
-                    <div id="badge-guest-credits" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-medium">
+                    <div id="badge-guest-credits" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 text-xs font-medium">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span>Guest Trial:</span>
-                        <span id="nav-guest-count" class="font-mono font-bold text-zinc-900">10</span>
+                        <span class="hidden sm:inline">Guest:</span>
+                        <span id="nav-guest-count" class="font-mono font-bold text-slate-900 dark:text-white">10</span>
                         <span>free</span>
                     </div>
-                    <button id="btn-open-login" class="px-3 py-1.5 text-xs font-medium text-zinc-700 hover:text-zinc-900 border border-zinc-200 rounded-md bg-white hover:bg-zinc-50 transition-colors duration-150">
+                    <button id="btn-open-login" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700/60 rounded-lg bg-white dark:bg-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors duration-150">
                         Log In
                     </button>
-                    <button id="btn-open-register" class="px-3.5 py-1.5 text-xs font-medium rounded-md bg-zinc-900 hover:bg-zinc-800 text-white transition-colors duration-150">
-                        Sign Up (50 Free)
+                    <button id="btn-open-register" class="px-3.5 py-1.5 text-xs font-medium rounded-lg btn-primary-glow transition-all duration-150 flex items-center gap-1.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Sign Up</span>
                     </button>
                 </div>
 
                 <!-- Authenticated View -->
                 <div id="nav-auth" class="hidden flex items-center gap-2">
                     <!-- User Account Pill with Email -->
-                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 border border-zinc-200 text-xs text-zinc-900 font-medium">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-zinc-500 shrink-0"></i>
-                        <span id="nav-user-email" class="font-mono text-zinc-900 font-semibold max-w-[180px] truncate">user@example.com</span>
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs text-slate-900 dark:text-slate-200 font-medium">
+                        <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                        <span id="nav-user-email" class="font-mono text-slate-900 dark:text-slate-200 font-semibold max-w-[150px] truncate">user@example.com</span>
                     </div>
 
                     <!-- Admin Unlimited Badge -->
-                    <div id="badge-admin-credits" class="hidden flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-xs font-medium">
+                    <div id="badge-admin-credits" class="hidden flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 dark:bg-slate-800 text-white text-xs font-medium border border-slate-700">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
-                        <span>Admin (Unlimited ∞)</span>
+                        <span>Admin (∞)</span>
                     </div>
 
                     <!-- Pro Member Badge -->
-                    <div id="badge-pro-credits" class="hidden flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600 shrink-0"></i>
-                        <span>Pro (4K Original)</span>
+                    <div id="badge-pro-credits" class="hidden flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-300 text-xs font-semibold">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500 shrink-0"></i>
+                        <span>Pro (4K)</span>
                     </div>
 
                     <!-- Standard Credits Badge (Free Tier) -->
-                    <div id="badge-standard-credits" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-medium">
-                        <span id="nav-credits-count" class="font-mono font-bold text-zinc-900">50</span>
+                    <div id="badge-standard-credits" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 text-xs font-medium">
+                        <span id="nav-credits-count" class="font-mono font-bold text-slate-900 dark:text-white">50</span>
                         <span>credits</span>
                     </div>
 
-                    <!-- Upgrade to Pro Header Button (Visible only to Free users) -->
-                    <button id="btn-header-upgrade" class="px-2.5 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs transition-colors duration-150 flex items-center gap-1">
-                        <i data-lucide="sparkles" class="w-3 h-3 text-amber-400"></i>
-                        <span>Upgrade Pro</span>
+                    <!-- Upgrade to Pro Header Button -->
+                    <button id="btn-header-upgrade" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium text-xs transition-colors duration-150 flex items-center gap-1 shadow-xs">
+                        <i data-lucide="sparkles" class="w-3 h-3 text-amber-200"></i>
+                        <span>Upgrade</span>
                     </button>
 
                     <!-- API Keys Modal Button -->
-                    <button id="btn-open-keys" class="p-1.5 rounded-md hover:bg-zinc-100 border border-zinc-200 text-zinc-600 hover:text-zinc-900 transition-colors duration-150" title="Developer API Keys">
+                    <button id="btn-open-keys" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors duration-150" title="Developer API Keys">
                         <i data-lucide="key" class="w-3.5 h-3.5"></i>
                     </button>
 
                     <!-- Logout Button -->
-                    <button id="btn-logout" class="px-2.5 py-1 rounded-md hover:bg-zinc-100 border border-zinc-200 text-zinc-600 hover:text-zinc-900 text-xs font-medium transition-colors duration-150 flex items-center gap-1" title="Logout">
+                    <button id="btn-logout" class="px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-colors duration-150 flex items-center gap-1" title="Logout">
                         <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-                        <span>Logout</span>
+                        <span class="hidden sm:inline">Logout</span>
                     </button>
                 </div>
             </div>
@@ -119,15 +162,19 @@
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-10" id="remover">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 relative z-10" id="remover">
         
-        <!-- Minimalist Headline -->
+        <!-- Hero Headline (Linear / Stripe Typography) -->
         <div class="text-center max-w-2xl mx-auto mb-8">
-            <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-900 mb-2">
-                AI Background Remover &amp; Canvas Editor
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800/80 text-indigo-700 dark:text-indigo-300 text-xs font-medium mb-3">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-500"></i>
+                <span>NVIDIA CUDA Powered • Instant High-Precision Cutouts</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-3">
+                AI Background Remover &amp; Studio Canvas
             </h1>
-            <p class="text-zinc-500 text-xs sm:text-sm">
-                No login required for your first 10 images. Automatic background cutout with interactive <strong class="text-zinc-800">Click to Erase</strong> &amp; <strong class="text-zinc-800">Click to Restore</strong>.
+            <p class="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
+                Zero setup required for your first 10 images. Automatic neural edge segmentation with interactive <strong class="text-slate-900 dark:text-slate-200">Click-to-Erase</strong> &amp; <strong class="text-slate-900 dark:text-slate-200">Click-to-Restore</strong>.
             </p>
         </div>
 
@@ -135,90 +182,124 @@
         <div class="max-w-4xl mx-auto">
             
             <!-- Upload Box (State 1: Idle) -->
-            <div id="upload-box" class="bg-white rounded-lg border border-dashed border-zinc-300 hover:border-zinc-400 p-12 text-center transition-colors duration-150 cursor-pointer">
+            <div id="upload-box" class="dropzone-box p-8 sm:p-12 text-center cursor-pointer group shadow-sm hover:shadow-md transition-all">
                 <input type="file" id="file-input" class="hidden" accept="image/jpeg,image/png,image/webp">
                 
-                <div class="w-10 h-10 mx-auto mb-3 rounded-md bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-500">
-                    <i data-lucide="upload" class="w-4 h-4"></i>
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-200">
+                    <i data-lucide="upload-cloud" class="w-6 h-6"></i>
                 </div>
 
-                <h3 class="text-sm font-semibold text-zinc-900 mb-1">Click to upload or drag &amp; drop an image</h3>
-                <p class="text-xs text-zinc-500 mb-5">Supports JPEG, PNG, WEBP up to 25MB</p>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">Click to upload or drag &amp; drop an image</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-5">Supports JPEG, PNG, WEBP up to 25MB • Aspect ratio preserved</p>
 
-                <div class="flex items-center justify-center gap-3">
-                    <button type="button" id="btn-browse" class="px-4 py-2 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs transition-colors duration-150">
-                        Choose Image
+                <div class="flex items-center justify-center gap-3 mb-6">
+                    <button type="button" id="btn-browse" class="px-5 py-2.5 rounded-lg btn-primary-glow font-medium text-xs transition-all flex items-center gap-2">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i>
+                        <span>Choose Image File</span>
                     </button>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-[11px] text-slate-400 dark:text-slate-500">
+                    <span>or paste from clipboard</span>
+                    <kbd>Ctrl + V</kbd>
+                </div>
+
+                <!-- Instant Try with Sample Images Gallery -->
+                <div class="mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
+                        Or try with a sample image:
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-2.5">
+                        <button type="button" class="btn-sample px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5" data-sample="sneaker">
+                            <span>👟</span>
+                            <span>Sneaker (Product)</span>
+                        </button>
+                        <button type="button" class="btn-sample px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5" data-sample="portrait">
+                            <span>👤</span>
+                            <span>Portrait (Hair Detail)</span>
+                        </button>
+                        <button type="button" class="btn-sample px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5" data-sample="cat">
+                            <span>🐱</span>
+                            <span>Pet (Fine Fur)</span>
+                        </button>
+                        <button type="button" class="btn-sample px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5" data-sample="car">
+                            <span>🚗</span>
+                            <span>Car (Reflection)</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Processing Loader (State 2: Loading) -->
-            <div id="processing-box" class="hidden bg-white rounded-lg border border-zinc-200 p-12 text-center">
-                <div class="w-8 h-8 mx-auto mb-4 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin"></div>
-                <h3 class="text-sm font-semibold text-zinc-900 mb-1" id="processing-title">Removing Background...</h3>
-                <p class="text-xs text-zinc-500" id="processing-status-text">Detecting foreground with NVIDIA GPU acceleration...</p>
+            <div id="processing-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-lg">
+                <div class="relative w-12 h-12 mx-auto mb-4">
+                    <div class="absolute inset-0 rounded-full border-2 border-indigo-200 dark:border-indigo-950"></div>
+                    <div class="absolute inset-0 rounded-full border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent animate-spin"></div>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1" id="processing-title">Removing Background...</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400" id="processing-status-text">Detecting foreground subjects with NVIDIA GPU acceleration...</p>
             </div>
 
             <!-- Result Box (State 3: Result Ready) -->
-            <div id="result-box" class="hidden bg-white rounded-lg border border-zinc-200 p-6">
+            <div id="result-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xl">
                 
                 <!-- Result Header Bar -->
-                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-zinc-100">
+                <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-200/80 dark:border-slate-800/80">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-sm font-bold text-zinc-900">Cutout Ready</h3>
-                            <span id="badge-resolution-status" class="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-100 text-zinc-700 border border-zinc-200">1080p</span>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Cutout Ready</h3>
+                            <span id="badge-resolution-status" class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-medium">1080p</span>
                         </div>
-                        <p class="text-xs text-zinc-500 mt-0.5" id="result-subtitle">
-                            Click on unwanted spots to <strong class="text-zinc-800">Erase</strong>, or switch to <strong class="text-zinc-800">Restore</strong> to bring back any cut off parts.
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" id="result-subtitle">
+                            Click on unwanted spots to <strong class="text-slate-800 dark:text-slate-200">Erase</strong>, or switch to <strong class="text-slate-800 dark:text-slate-200">Restore</strong> to bring back any cut off parts.
                         </p>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex items-center gap-2">
-                        <button id="btn-upload-another" class="px-3 py-1.5 rounded-md bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-medium transition-colors duration-150 flex items-center gap-1.5">
+                        <button id="btn-upload-another" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium transition-colors duration-150 flex items-center gap-1.5 shadow-xs">
                             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                             <span>Upload Another</span>
                         </button>
-                        <button id="btn-download-image" class="px-4 py-1.5 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium transition-colors duration-150 flex items-center gap-1.5">
+                        <button id="btn-download-image" class="px-4 py-1.5 rounded-lg btn-primary-glow text-white text-xs font-semibold transition-all flex items-center gap-1.5">
                             <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                            <span>Download PNG</span>
+                            <span>Download Cutout</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- 1080p Cap Notice for Free Users -->
-                <div id="banner-free-cap" class="hidden mb-4 p-3 rounded-md bg-zinc-50 border border-zinc-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div class="flex items-center gap-2 text-zinc-700">
-                        <i data-lucide="info" class="w-3.5 h-3.5 text-zinc-500 shrink-0"></i>
-                        <span>Free output capped at 1080x1080. Upgrade to Pro for uncompressed 4K original dimensions.</span>
+                <div id="banner-free-cap" class="hidden mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 text-amber-800 dark:text-amber-300">
+                        <i data-lucide="info" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0"></i>
+                        <span>Free output capped at 1080x1080. Upgrade to Pro for uncompressed 4K original camera resolution.</span>
                     </div>
-                    <button id="btn-banner-upgrade" class="font-medium text-zinc-900 underline hover:text-black">
+                    <button id="btn-banner-upgrade" class="font-semibold text-amber-900 dark:text-amber-200 underline hover:text-amber-950">
                         Upgrade (₹499/mo) →
                     </button>
                 </div>
 
                 <!-- Primary Studio Toolbar: Erase vs Restore + Settings -->
-                <div class="mb-4 p-3 rounded-md bg-zinc-50 border border-zinc-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
                     
                     <!-- Left: Interactive Erase vs Restore Tool Switcher -->
                     <div class="flex items-center gap-2">
-                        <div class="inline-flex p-0.5 bg-zinc-200 rounded-md text-xs font-medium">
+                        <div class="inline-flex p-0.5 bg-slate-200 dark:bg-slate-900 rounded-lg text-xs font-medium border border-slate-300/60 dark:border-slate-700/60">
                             <!-- Erase Tool -->
-                            <button id="btn-tool-erase" class="py-1 px-3 rounded transition-colors duration-150 bg-zinc-900 text-white shadow-xs flex items-center gap-1.5 font-medium">
+                            <button id="btn-tool-erase" class="py-1 px-3 rounded-md transition-all duration-150 bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 font-medium">
                                 <i data-lucide="eraser" class="w-3.5 h-3.5"></i>
                                 <span>Erase BG</span>
                             </button>
                             <!-- Restore Tool -->
-                            <button id="btn-tool-restore" class="py-1 px-3 rounded transition-colors duration-150 text-zinc-600 hover:text-zinc-900 flex items-center gap-1.5 font-medium">
+                            <button id="btn-tool-restore" class="py-1 px-3 rounded-md transition-all duration-150 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 font-medium">
                                 <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
                                 <span>Restore Pixels</span>
                             </button>
                         </div>
 
                         <!-- Before / After Slider Toggle -->
-                        <button id="btn-toggle-view" class="px-2.5 py-1 rounded-md text-xs font-medium text-zinc-700 hover:text-zinc-900 bg-white border border-zinc-200 hover:bg-zinc-50 transition-colors duration-150 flex items-center gap-1">
-                            <i data-lucide="columns-2" class="w-3 h-3"></i>
+                        <button id="btn-toggle-view" class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-150 flex items-center gap-1 shadow-xs">
+                            <i data-lucide="columns-2" class="w-3 h-3 text-indigo-500"></i>
                             <span id="label-view-mode">Compare Slider</span>
                         </button>
                     </div>
@@ -227,44 +308,44 @@
                     <div class="flex flex-wrap items-center gap-3">
                         <!-- Swatch -->
                         <div class="flex items-center gap-1.5">
-                            <div id="magic-swatch" class="w-5 h-5 rounded border border-zinc-300 bg-white shadow-xs"></div>
-                            <span id="magic-hex" class="text-xs font-mono text-zinc-600">Click pixel</span>
+                            <div id="magic-swatch" class="w-5 h-5 rounded-md border border-slate-300 dark:border-slate-600 bg-white shadow-xs"></div>
+                            <span id="magic-hex" class="text-xs font-mono text-slate-600 dark:text-slate-400">Click pixel</span>
                         </div>
 
                         <!-- Tolerance Slider -->
                         <div class="flex items-center gap-1.5">
-                            <span class="text-xs text-zinc-500">Tolerance:</span>
-                            <input type="range" id="magic-tolerance-slider" min="1" max="100" value="25" class="w-20 h-1 bg-zinc-200 rounded cursor-pointer">
-                            <span id="magic-tolerance-val" class="text-xs font-mono font-medium text-zinc-800 w-6">25%</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Tolerance:</span>
+                            <input type="range" id="magic-tolerance-slider" min="1" max="100" value="25" class="w-20 h-1.5 bg-slate-200 dark:bg-slate-700 rounded cursor-pointer">
+                            <span id="magic-tolerance-val" class="text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 w-6">25%</span>
                         </div>
                     </div>
 
                     <!-- Right: Backdrop Selector (Dark vs Checker vs Light) & Undo -->
                     <div class="flex items-center gap-2">
                         <!-- Canvas Backdrop Selector -->
-                        <div class="flex items-center gap-1 text-[11px] text-zinc-500">
+                        <div class="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
                             <span>Backdrop:</span>
-                            <div class="inline-flex p-0.5 bg-zinc-200 rounded text-[10px]">
-                                <button id="btn-bg-dark" class="px-2 py-0.5 rounded bg-zinc-900 text-white font-medium" title="Dark backdrop (shows un-erased light fringes clearly)">
+                            <div class="inline-flex p-0.5 bg-slate-200 dark:bg-slate-900 rounded-md text-[10px] border border-slate-300/60 dark:border-slate-700/60">
+                                <button id="btn-bg-dark" class="px-2 py-0.5 rounded bg-slate-900 text-white font-medium shadow-xs" title="Dark checkerboard (shows un-erased light fringes clearly)">
                                     Dark
                                 </button>
-                                <button id="btn-bg-grid" class="px-2 py-0.5 rounded text-zinc-700 hover:text-zinc-900" title="Light grid">
+                                <button id="btn-bg-grid" class="px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Light grid">
                                     Grid
                                 </button>
-                                <button id="btn-bg-light" class="px-2 py-0.5 rounded text-zinc-700 hover:text-zinc-900" title="Pure white">
+                                <button id="btn-bg-light" class="px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pure white">
                                     Light
                                 </button>
                             </div>
                         </div>
 
                         <!-- Undo Button -->
-                        <button id="btn-magic-undo" disabled class="px-2.5 py-1 rounded bg-white hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed border border-zinc-200 text-xs font-medium text-zinc-700 transition-colors duration-150 flex items-center gap-1" title="Undo (Ctrl+Z)">
+                        <button id="btn-magic-undo" disabled class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 transition-colors duration-150 flex items-center gap-1 shadow-xs" title="Undo (Ctrl+Z)">
                             <i data-lucide="undo" class="w-3 h-3"></i>
                             <span>Undo</span>
                         </button>
 
                         <!-- Reset Button -->
-                        <button id="btn-magic-reset" class="px-2.5 py-1 rounded bg-white hover:bg-zinc-100 border border-zinc-200 text-xs font-medium text-zinc-600 hover:text-zinc-900 transition-colors duration-150 flex items-center gap-1" title="Reset all changes">
+                        <button id="btn-magic-reset" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors duration-150 flex items-center gap-1 shadow-xs" title="Reset all changes">
                             <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
                             <span>Reset</span>
                         </button>
@@ -272,18 +353,18 @@
                 </div>
 
                 <!-- Status Hint Bar -->
-                <div id="tool-status-hint" class="mb-3 px-3 py-1.5 rounded bg-zinc-100 border border-zinc-200 text-xs text-zinc-600 flex items-center justify-between">
+                <div id="tool-status-hint" class="mb-3 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between">
                     <span id="label-tool-hint">
-                        <strong>Erase Mode:</strong> Click any leftover background or unwanted color to erase it to transparent.
+                        <strong class="text-slate-900 dark:text-slate-200">Erase Mode:</strong> Click any leftover background or unwanted color to erase it to transparent.
                     </span>
-                    <span class="text-[11px] text-zinc-400 font-mono">
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500 font-mono hidden sm:inline">
                         Dark canvas highlights un-removed edges
                     </span>
                 </div>
 
-                <!-- Viewport: Canvas Mode (Subtle Dark Checkerboard for Maximum Edge Clarity) -->
-                <div id="canvas-container-wrap" class="relative overflow-hidden rounded-md checkerboard-dark border border-zinc-200 flex justify-center items-center max-h-[580px] min-h-[380px]">
-                    <canvas id="magic-canvas" class="cursor-crosshair max-w-full max-h-[560px] object-contain"></canvas>
+                <!-- Viewport: Canvas Mode (Crisp High-Contrast Backdrop) -->
+                <div id="canvas-container-wrap" class="relative overflow-hidden rounded-xl checkerboard-dark border border-slate-200 dark:border-slate-800 flex justify-center items-center max-h-[580px] min-h-[380px] shadow-inner">
+                    <canvas id="magic-canvas" class="cursor-crosshair max-w-full max-h-[560px] object-contain transition-transform duration-100"></canvas>
                 </div>
 
                 <!-- Viewport: Comparison Slider (Toggled via button) -->
@@ -294,39 +375,45 @@
                     </div>
                     <div class="slider-handle" id="slider-divider" style="left: 50%;">
                         <div class="slider-button">
-                            <i data-lucide="chevrons-left-right" class="w-3 h-3"></i>
+                            <i data-lucide="chevrons-left-right" class="w-3.5 h-3.5"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Bottom Status Details -->
-                <div class="mt-3 flex items-center justify-between text-xs text-zinc-500">
-                    <span id="credit-deduction-badge" class="flex items-center gap-1.5">
-                        <i data-lucide="check" class="w-3.5 h-3.5 text-zinc-700"></i>
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-200/80 dark:border-slate-800/80">
+                    <span id="credit-deduction-badge" class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
                         <span>1 Credit deducted</span>
                     </span>
-                    <span id="img-file-details">Processed via NVIDIA GPU</span>
+                    <span id="img-file-details" class="font-mono text-[11px]">Processed via NVIDIA GPU</span>
                 </div>
             </div>
 
         </div>
 
-        <!-- Developer API Section -->
-        <section id="api-section" class="mt-16 bg-white rounded-lg border border-zinc-200 p-8">
+        <!-- Developer API Section (Linear Dark Block) -->
+        <section id="api-section" class="mt-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                 <div>
-                    <h3 class="text-base font-semibold text-zinc-900">Developer API</h3>
-                    <p class="text-xs text-zinc-500">Direct HTTP integration for automated background and color removal.</p>
+                    <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-mono font-bold uppercase mb-1">
+                        REST API v1
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">Developer API</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Direct HTTP integration for automated background and color removal in your apps.</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-mono text-zinc-500">POST /api/v1/remove-bg</span>
-                    <span class="text-xs font-mono text-zinc-500">|</span>
-                    <span class="text-xs font-mono text-zinc-500">POST /api/v1/remove-color</span>
+                    <span class="text-xs font-mono px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">POST /api/v1/remove-bg</span>
+                    <span class="text-xs font-mono px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">POST /api/v1/remove-color</span>
                 </div>
             </div>
 
-            <div class="bg-zinc-950 text-zinc-100 rounded-md p-4 text-xs font-mono overflow-x-auto border border-zinc-800">
-<span class="text-zinc-500"># Remove image background</span>
+            <div class="relative bg-slate-950 text-slate-100 rounded-xl p-4 text-xs font-mono overflow-x-auto border border-slate-800 shadow-inner">
+                <button onclick="copyToClipboard(`curl -X POST 'http://localhost:8080/api/v1/remove-bg' -H 'X-API-Key: YOUR_API_KEY' -F 'file=@photo.jpg' -o 'cutout.png'`)" class="absolute top-3 right-3 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300 flex items-center gap-1 transition-colors" title="Copy cURL snippet">
+                    <i data-lucide="copy" class="w-3 h-3"></i>
+                    <span>Copy</span>
+                </button>
+<span class="text-slate-500"># 1. Remove background via cURL</span>
 curl -X POST "http://localhost:8080/api/v1/remove-bg" \
   -H "X-API-Key: YOUR_API_KEY" \
   -F "file=@photo.jpg" -o "cutout.png"
@@ -335,68 +422,68 @@ curl -X POST "http://localhost:8080/api/v1/remove-bg" \
 
     </main>
 
-    <!-- Pricing Modal (Flat 2D Swiss Style) -->
-    <div id="modal-pricing" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg border border-zinc-200 p-6 max-w-3xl w-full shadow-lg">
-            <div class="flex items-center justify-between pb-4 mb-6 border-b border-zinc-200">
+    <!-- Pricing Modal (Linear / Stripe Style) -->
+    <div id="modal-pricing" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 max-w-3xl w-full shadow-2xl">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                    <h3 class="text-base font-semibold text-zinc-900">Subscription Plans</h3>
-                    <p class="text-xs text-zinc-500">Choose between standard 1080p and uncompressed 4K original resolution.</p>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Subscription Plans</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Choose between standard 1080p and uncompressed 4K original resolution.</p>
                 </div>
-                <button id="btn-close-pricing" class="text-zinc-400 hover:text-zinc-900 p-1">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+                <button id="btn-close-pricing" class="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Free Tier -->
-                <div class="bg-white border border-zinc-200 rounded-lg p-5 flex flex-col justify-between">
+                <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col justify-between">
                     <div>
-                        <div class="text-xs font-medium uppercase text-zinc-400 tracking-wider mb-1">Free</div>
-                        <div class="text-2xl font-bold text-zinc-900 mb-3">₹0</div>
-                        <ul class="text-xs text-zinc-600 space-y-2 mb-6">
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>50 Welcome Credits</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>1080x1080 Max Resolution</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>Erase &amp; Restore Tools</li>
+                        <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1">Free Tier</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">₹0</div>
+                        <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-2.5 mb-6">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>50 Welcome Credits</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>1080x1080 Max Output</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>Erase &amp; Restore Tools</li>
                         </ul>
                     </div>
-                    <button class="w-full py-2 rounded-md border border-zinc-200 text-xs font-medium text-zinc-500 cursor-not-allowed">
+                    <button class="w-full py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-400 cursor-not-allowed">
                         Current Plan
                     </button>
                 </div>
 
                 <!-- Pro Tier (Highlighted) -->
-                <div class="bg-zinc-50 border-2 border-zinc-900 rounded-lg p-5 flex flex-col justify-between relative">
-                    <div class="absolute -top-2.5 right-4 bg-zinc-900 text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                <div class="bg-white dark:bg-slate-800 border-2 border-indigo-600 dark:border-indigo-500 rounded-xl p-5 flex flex-col justify-between relative shadow-lg shadow-indigo-500/10">
+                    <div class="absolute -top-3 right-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
                         RECOMMENDED
                     </div>
                     <div>
-                        <div class="text-xs font-medium uppercase text-zinc-500 tracking-wider mb-1">Pro Ultra-HD</div>
-                        <div class="text-2xl font-bold text-zinc-900 mb-3">₹499 <span class="text-xs font-normal text-zinc-500">/mo</span></div>
-                        <ul class="text-xs text-zinc-700 space-y-2 mb-6">
-                            <li class="flex items-center gap-1.5 font-medium"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>Full Original 4K Ultra-HD</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>500 Credits per month</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>Unlimited Erase &amp; Restore</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>Developer API Key Access</li>
+                        <div class="text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 tracking-wider mb-1">Pro Ultra-HD</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">₹499 <span class="text-xs font-normal text-slate-500">/mo</span></div>
+                        <ul class="text-xs text-slate-700 dark:text-slate-300 space-y-2.5 mb-6">
+                            <li class="flex items-center gap-2 font-medium"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>Full Original 4K Ultra-HD</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>500 Credits per month</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>Unlimited Erase &amp; Restore</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>Developer API Key Access</li>
                         </ul>
                     </div>
-                    <button id="btn-upgrade-pro" class="w-full py-2 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-colors duration-150">
+                    <button id="btn-upgrade-pro" class="w-full py-2.5 rounded-lg btn-primary-glow font-semibold text-xs transition-all">
                         Upgrade to Pro
                     </button>
                 </div>
 
                 <!-- Business Tier -->
-                <div class="bg-white border border-zinc-200 rounded-lg p-5 flex flex-col justify-between">
+                <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col justify-between">
                     <div>
-                        <div class="text-xs font-medium uppercase text-zinc-400 tracking-wider mb-1">Business</div>
-                        <div class="text-2xl font-bold text-zinc-900 mb-3">₹1,499 <span class="text-xs font-normal text-zinc-500">/mo</span></div>
-                        <ul class="text-xs text-zinc-600 space-y-2 mb-6">
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>2,500 Credits per month</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>Uncompressed 4K &amp; 8K</li>
-                            <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-zinc-900"></i>Priority Dedicated GPU</li>
+                        <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-1">Enterprise</div>
+                        <div class="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">₹1,499 <span class="text-xs font-normal text-slate-500">/mo</span></div>
+                        <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-2.5 mb-6">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>2,500 Credits per month</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>Uncompressed 4K &amp; 8K</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-500"></i>Dedicated Priority GPU</li>
                         </ul>
                     </div>
-                    <button id="btn-upgrade-business" class="w-full py-2 rounded-md border border-zinc-300 hover:border-zinc-400 text-xs font-medium text-zinc-900 transition-colors duration-150">
+                    <button id="btn-upgrade-business" class="w-full py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors">
                         Contact Sales
                     </button>
                 </div>
@@ -404,140 +491,141 @@ curl -X POST "http://localhost:8080/api/v1/remove-bg" \
         </div>
     </div>
 
-    <!-- Authentication Modal (Flat 2D) -->
-    <div id="modal-auth" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg border border-zinc-200 p-6 max-w-sm w-full shadow-lg">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-200">
-                <div class="flex items-center gap-3">
-                    <button id="tab-login" class="text-xs font-semibold text-zinc-900 border-b-2 border-zinc-900 pb-1">
+    <!-- Authentication Modal -->
+    <div id="modal-auth" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 max-w-sm w-full shadow-2xl">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-4">
+                    <button id="tab-login" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 pb-1">
                         Log In
                     </button>
-                    <button id="tab-register" class="text-xs font-semibold text-zinc-400 hover:text-zinc-900 pb-1">
+                    <button id="tab-register" class="text-xs font-bold text-slate-400 hover:text-slate-900 dark:hover:text-white pb-1">
                         Register
                     </button>
                 </div>
-                <button id="btn-close-auth" class="text-zinc-400 hover:text-zinc-900 p-1">
+                <button id="btn-close-auth" class="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
 
-            <div id="register-bonus-badge" class="hidden mb-3 p-2 rounded bg-zinc-100 text-zinc-700 text-xs border border-zinc-200">
-                🎁 Includes 50 free credits upon registration.
+            <div id="register-bonus-badge" class="hidden mb-3 p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs border border-indigo-200/80 dark:border-indigo-800 flex items-center gap-2">
+                <span>🎁</span>
+                <span>Includes 50 free credits upon registration.</span>
             </div>
 
-            <form id="form-auth" class="space-y-3">
+            <form id="form-auth" class="space-y-3.5">
                 <div>
-                    <label class="block text-xs font-medium text-zinc-700 mb-1">Email address</label>
-                    <input type="email" id="auth-email" required class="w-full text-xs px-3 py-2 rounded-md border border-zinc-300 focus:outline-none focus:border-zinc-900" placeholder="name@example.com">
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Email address</label>
+                    <input type="email" id="auth-email" required class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600" placeholder="name@example.com">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-zinc-700 mb-1">Password</label>
-                    <input type="password" id="auth-password" required minlength="6" class="w-full text-xs px-3 py-2 rounded-md border border-zinc-300 focus:outline-none focus:border-zinc-900" placeholder="••••••••">
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
+                    <input type="password" id="auth-password" required minlength="6" class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600" placeholder="••••••••">
                 </div>
-                <button type="submit" id="btn-auth-submit" class="w-full py-2 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs transition-colors duration-150">
-                    <span>Submit</span>
+                <button type="submit" id="btn-auth-submit" class="w-full py-2.5 rounded-lg btn-primary-glow font-semibold text-xs transition-all">
+                    <span>Log In</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Developer API Keys Modal (Flat 2D) -->
-    <div id="modal-keys" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg border border-zinc-200 p-6 max-w-lg w-full shadow-lg">
-            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-200">
+    <!-- Developer API Keys Modal -->
+    <div id="modal-keys" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 max-w-lg w-full shadow-2xl">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                    <h3 class="text-sm font-semibold text-zinc-900">Developer API Keys</h3>
-                    <p class="text-xs text-zinc-500">Authenticate requests via the <code class="font-mono text-zinc-800">X-API-Key</code> header.</p>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Developer API Keys</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Authenticate requests via the <code class="font-mono text-indigo-500">X-API-Key</code> header.</p>
                 </div>
-                <button id="btn-close-keys" class="text-zinc-400 hover:text-zinc-900 p-1">
+                <button id="btn-close-keys" class="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
 
             <form id="form-create-key" class="flex gap-2 mb-4">
-                <input type="text" id="input-key-name" required placeholder="Key name (e.g. Production Server)" class="flex-1 text-xs px-3 py-2 rounded-md border border-zinc-300 focus:outline-none focus:border-zinc-900">
-                <button type="submit" class="px-3.5 py-2 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs transition-colors duration-150">
+                <input type="text" id="input-key-name" required placeholder="Key name (e.g. Production Server)" class="flex-1 text-xs px-3.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600">
+                <button type="submit" class="px-4 py-2 rounded-lg btn-primary-glow font-semibold text-xs transition-all">
                     Create Key
                 </button>
             </form>
 
             <div id="api-keys-list" class="space-y-2 max-h-60 overflow-y-auto">
-                <p class="text-xs text-zinc-500 text-center py-4">Loading keys...</p>
+                <p class="text-xs text-slate-400 text-center py-4">Loading keys...</p>
             </div>
         </div>
     </div>
 
-    <!-- Download Resolution Options Modal (2D Minimalist Notion/Swiss Style) -->
-    <div id="modal-download" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg border border-zinc-200 p-6 max-w-lg w-full shadow-lg">
-            <div class="flex items-center justify-between pb-3 mb-5 border-b border-zinc-200">
+    <!-- Download Resolution Options Modal -->
+    <div id="modal-download" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 max-w-lg w-full shadow-2xl">
+            <div class="flex items-center justify-between pb-3 mb-5 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                    <h3 class="text-sm font-semibold text-zinc-900">Download Cutout Image</h3>
-                    <p class="text-xs text-zinc-500">Choose your preferred export resolution and quality.</p>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Download Cutout Image</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Choose your preferred export resolution and quality.</p>
                 </div>
-                <button id="btn-close-download" class="text-zinc-400 hover:text-zinc-900 p-1">
+                <button id="btn-close-download" class="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
                 <!-- Option 1: Standard 1080p (Free) -->
-                <div class="p-4 rounded-lg border border-zinc-200 hover:border-zinc-300 bg-zinc-50/50 flex flex-col justify-between transition-colors duration-150">
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-semibold text-zinc-900 flex items-center gap-1.5">
-                                <i data-lucide="monitor" class="w-3.5 h-3.5 text-zinc-600"></i>
+                            <span class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="monitor" class="w-3.5 h-3.5 text-slate-500"></i>
                                 Standard HD
                             </span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                                 Free
                             </span>
                         </div>
-                        <div class="text-lg font-mono font-semibold text-zinc-900 mb-1" id="dl-1080-dims">
+                        <div class="text-lg font-mono font-bold text-slate-900 dark:text-white mb-1" id="dl-1080-dims">
                             1080 × 1080 px
                         </div>
-                        <p class="text-[11px] text-zinc-500 leading-relaxed mb-4">
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
                             Aspect-ratio preserved transparent PNG. Perfect for web, e-commerce, and social media. Free for all users.
                         </p>
                     </div>
-                    <button id="btn-dl-1080" class="w-full py-2 px-3 rounded-md bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-900 font-medium text-xs transition-colors duration-150 flex items-center justify-center gap-1.5 shadow-sm">
+                    <button id="btn-dl-1080" class="w-full py-2.5 px-3 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
                         <span>Download 1080p (Free)</span>
                     </button>
                 </div>
 
                 <!-- Option 2: Original Ultra-HD (Pro / Payment Required) -->
-                <div class="p-4 rounded-lg border-2 border-zinc-900 bg-white flex flex-col justify-between relative shadow-sm">
+                <div class="p-4 rounded-xl border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-slate-800 flex flex-col justify-between relative shadow-lg shadow-indigo-500/10">
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-semibold text-zinc-900 flex items-center gap-1.5">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-zinc-900"></i>
+                            <span class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-500"></i>
                                 Original Resolution
                             </span>
-                            <span id="dl-original-badge" class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+                            <span id="dl-original-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center gap-1">
                                 <i data-lucide="lock" class="w-2.5 h-2.5"></i> Pro (₹499)
                             </span>
                         </div>
-                        <div class="text-lg font-mono font-semibold text-zinc-900 mb-1" id="dl-original-dims">
+                        <div class="text-lg font-mono font-bold text-slate-900 dark:text-white mb-1" id="dl-original-dims">
                             4000 × 3000 px
                         </div>
-                        <p class="text-[11px] text-zinc-500 leading-relaxed mb-4">
-                            100% full uncompressed camera resolution. Pristine edge sharpness with zero downsampling for print & high-end design.
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+                            100% full uncompressed camera resolution. Pristine edge sharpness with zero downsampling for print &amp; high-end design.
                         </p>
                     </div>
-                    <button id="btn-dl-original" class="w-full py-2 px-3 rounded-md bg-zinc-900 hover:bg-zinc-800 text-white font-medium text-xs transition-colors duration-150 flex items-center justify-center gap-1.5">
+                    <button id="btn-dl-original" class="w-full py-2.5 px-3 rounded-lg btn-primary-glow font-semibold text-xs transition-all flex items-center justify-center gap-1.5">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
                         <span id="btn-dl-original-label">Download Original</span>
                     </button>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-3 border-t border-zinc-200 text-[11px] text-zinc-500">
+            <div class="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
                 <span class="flex items-center gap-1">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-zinc-400"></i>
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-slate-400"></i>
                     Admin sufi11729@gmail.com has unlimited full original access
                 </span>
-                <button id="btn-cancel-download" class="hover:text-zinc-900 font-medium">Cancel</button>
+                <button id="btn-cancel-download" class="hover:text-slate-900 dark:hover:text-white font-medium">Cancel</button>
             </div>
         </div>
     </div>

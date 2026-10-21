@@ -161,8 +161,29 @@ const toastContainer = document.getElementById('toast-container');
 let magicCtx = null;
 let currentLoadedImage = null;
 
+// ==================== THEME MANAGEMENT ====================
+function initTheme() {
+    const storedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (storedTheme === 'dark' || (!storedTheme && systemPrefersDark)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+}
+
 // ==================== INITIALIZATION ====================
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     lucide.createIcons();
     initAuthUI();
     initEventListeners();
@@ -307,6 +328,10 @@ function handleLogout() {
 
 // ==================== EVENT LISTENERS ====================
 function initEventListeners() {
+    // Theme Toggle
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    btnThemeToggle?.addEventListener('click', toggleTheme);
+
     // Navigation & Modals
     btnNavPricing?.addEventListener('click', () => openModal(modalPricing));
     btnClosePricing?.addEventListener('click', () => closeModal(modalPricing));
@@ -372,6 +397,31 @@ function initEventListeners() {
         }
     });
 
+    // Clipboard Paste Listener (Ctrl+V anywhere on page)
+    window.addEventListener('paste', (e) => {
+        if (!e.clipboardData || !e.clipboardData.items) return;
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const blob = items[i].getAsFile();
+                if (blob) {
+                    showToast('Image pasted from clipboard!', 'info');
+                    handleSelectedFile(blob);
+                    break;
+                }
+            }
+        }
+    });
+
+    // Sample Image Buttons
+    document.querySelectorAll('.btn-sample').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sampleType = btn.dataset.sample || 'sneaker';
+            loadSampleImage(sampleType);
+        });
+    });
+
     // Tool Switcher: Erase vs Restore
     btnToolErase?.addEventListener('click', () => switchToolMode('erase'));
     btnToolRestore?.addEventListener('click', () => switchToolMode('restore'));
@@ -428,38 +478,267 @@ function switchToolMode(mode) {
     state.toolMode = mode;
 
     if (mode === 'erase') {
-        btnToolErase.className = 'py-1 px-3 rounded transition-colors duration-150 bg-zinc-900 text-white shadow-xs flex items-center gap-1.5 font-medium';
-        btnToolRestore.className = 'py-1 px-3 rounded transition-colors duration-150 text-zinc-600 hover:text-zinc-900 flex items-center gap-1.5 font-medium';
-        labelToolHint.innerHTML = '<strong>Erase Mode:</strong> Click any leftover background or unwanted color to erase it to transparent.';
+        btnToolErase.className = 'py-1 px-3 rounded-md transition-all duration-150 bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 font-medium';
+        btnToolRestore.className = 'py-1 px-3 rounded-md transition-all duration-150 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 font-medium';
+        labelToolHint.innerHTML = '<strong class="text-slate-900 dark:text-slate-200">Erase Mode:</strong> Click any leftover background or unwanted color to erase it to transparent.';
         magicCanvas.classList.add('cursor-crosshair');
     } else {
-        btnToolRestore.className = 'py-1 px-3 rounded transition-colors duration-150 bg-zinc-900 text-white shadow-xs flex items-center gap-1.5 font-medium';
-        btnToolErase.className = 'py-1 px-3 rounded transition-colors duration-150 text-zinc-600 hover:text-zinc-900 flex items-center gap-1.5 font-medium';
-        labelToolHint.innerHTML = '<strong>Restore Mode:</strong> Click any erased area or subject edge to restore original pixels from your photo.';
+        btnToolRestore.className = 'py-1 px-3 rounded-md transition-all duration-150 bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 font-medium';
+        btnToolErase.className = 'py-1 px-3 rounded-md transition-all duration-150 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 font-medium';
+        labelToolHint.innerHTML = '<strong class="text-slate-900 dark:text-slate-200">Restore Mode:</strong> Click any erased area or subject edge to restore original pixels from your photo.';
         magicCanvas.classList.add('cursor-crosshair');
     }
 
-    lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
 }
 
 // ==================== BACKDROP SWITCHER ====================
 function setCanvasBackdrop(type) {
-    canvasContainerWrap.className = 'relative overflow-hidden rounded-md border border-zinc-200 flex justify-center items-center max-h-[580px] min-h-[380px] transition-colors duration-150';
+    canvasContainerWrap.className = 'relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 flex justify-center items-center max-h-[580px] min-h-[380px] transition-colors duration-150';
 
-    btnBgDark.className = 'px-2 py-0.5 rounded text-zinc-700 hover:text-zinc-900';
-    btnBgGrid.className = 'px-2 py-0.5 rounded text-zinc-700 hover:text-zinc-900';
-    btnBgLight.className = 'px-2 py-0.5 rounded text-zinc-700 hover:text-zinc-900';
+    btnBgDark.className = 'px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white';
+    btnBgGrid.className = 'px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white';
+    btnBgLight.className = 'px-2 py-0.5 rounded text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white';
 
     if (type === 'dark') {
         canvasContainerWrap.classList.add('checkerboard-dark');
-        btnBgDark.className = 'px-2 py-0.5 rounded bg-zinc-900 text-white font-medium';
+        btnBgDark.className = 'px-2 py-0.5 rounded bg-slate-900 text-white font-medium shadow-xs';
     } else if (type === 'grid') {
         canvasContainerWrap.classList.add('checkerboard-light');
-        btnBgGrid.className = 'px-2 py-0.5 rounded bg-zinc-900 text-white font-medium';
+        btnBgGrid.className = 'px-2 py-0.5 rounded bg-slate-900 text-white font-medium shadow-xs';
     } else if (type === 'light') {
         canvasContainerWrap.classList.add('canvas-bg-light');
-        btnBgLight.className = 'px-2 py-0.5 rounded bg-zinc-900 text-white font-medium';
+        btnBgLight.className = 'px-2 py-0.5 rounded bg-slate-900 text-white font-medium shadow-xs';
     }
+}
+
+// ==================== SAMPLE IMAGE GENERATOR ====================
+function loadSampleImage(sampleType) {
+    const width = 800;
+    const height = 600;
+
+    // Create Offscreen Original (with background)
+    const canvasOrig = document.createElement('canvas');
+    canvasOrig.width = width;
+    canvasOrig.height = height;
+    const ctxOrig = canvasOrig.getContext('2d');
+
+    // Create Offscreen Cutout (transparent background)
+    const canvasCutout = document.createElement('canvas');
+    canvasCutout.width = width;
+    canvasCutout.height = height;
+    const ctxCutout = canvasCutout.getContext('2d');
+
+    if (sampleType === 'sneaker') {
+        // Background: Soft gradient studio backdrop
+        const grad = ctxOrig.createLinearGradient(0, 0, width, height);
+        grad.addColorStop(0, '#fde047');
+        grad.addColorStop(1, '#f97316');
+        ctxOrig.fillStyle = grad;
+        ctxOrig.fillRect(0, 0, width, height);
+
+        // Draw Sneaker Object on both
+        [ctxOrig, ctxCutout].forEach(ctx => {
+            // Sole
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(400, 380, 220, 45, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sole rubber bottom
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.ellipse(400, 400, 210, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sneaker Body
+            ctx.fillStyle = '#4f46e5';
+            ctx.beginPath();
+            ctx.moveTo(220, 380);
+            ctx.lineTo(260, 260);
+            ctx.quadraticCurveTo(340, 240, 420, 280);
+            ctx.quadraticCurveTo(520, 310, 600, 370);
+            ctx.lineTo(220, 380);
+            ctx.closePath();
+            ctx.fill();
+
+            // Swoosh / Stripe
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 14;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(280, 320);
+            ctx.quadraticCurveTo(380, 360, 500, 310);
+            ctx.stroke();
+
+            // Laces
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 5;
+            for (let i = 0; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(330 + i * 25, 260 + i * 10);
+                ctx.lineTo(350 + i * 25, 290 + i * 10);
+                ctx.stroke();
+            }
+        });
+    } else if (sampleType === 'portrait') {
+        // Background: Warm Teal / Slate Studio
+        const grad = ctxOrig.createRadialGradient(400, 300, 50, 400, 300, 400);
+        grad.addColorStop(0, '#0284c7');
+        grad.addColorStop(1, '#0f172a');
+        ctxOrig.fillStyle = grad;
+        ctxOrig.fillRect(0, 0, width, height);
+
+        [ctxOrig, ctxCutout].forEach(ctx => {
+            // Shoulders & Torso
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.ellipse(400, 560, 220, 140, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Neck
+            ctx.fillStyle = '#fbcfe8';
+            ctx.fillRect(360, 340, 80, 100);
+
+            // Head / Face
+            ctx.fillStyle = '#fbcfe8';
+            ctx.beginPath();
+            ctx.ellipse(400, 270, 95, 125, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Hair (Fine silhouette)
+            ctx.fillStyle = '#1e1b4b';
+            ctx.beginPath();
+            ctx.ellipse(400, 200, 115, 80, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(285, 200, 40, 160);
+            ctx.fillRect(475, 200, 40, 160);
+
+            // Glasses
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(330, 250, 50, 35);
+            ctx.strokeRect(420, 250, 50, 35);
+            ctx.beginPath();
+            ctx.moveTo(380, 265);
+            ctx.lineTo(420, 265);
+            ctx.stroke();
+        });
+    } else if (sampleType === 'cat') {
+        // Background: Lush outdoor garden grass
+        const grad = ctxOrig.createLinearGradient(0, 0, 0, height);
+        grad.addColorStop(0, '#86efac');
+        grad.addColorStop(1, '#15803d');
+        ctxOrig.fillStyle = grad;
+        ctxOrig.fillRect(0, 0, width, height);
+
+        [ctxOrig, ctxCutout].forEach(ctx => {
+            // Cat Body
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath();
+            ctx.ellipse(400, 420, 140, 110, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cat Head
+            ctx.beginPath();
+            ctx.ellipse(400, 280, 100, 85, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Left Ear
+            ctx.beginPath();
+            ctx.moveTo(320, 240);
+            ctx.lineTo(310, 160);
+            ctx.lineTo(370, 210);
+            ctx.closePath();
+            ctx.fill();
+
+            // Right Ear
+            ctx.beginPath();
+            ctx.moveTo(480, 240);
+            ctx.lineTo(490, 160);
+            ctx.lineTo(430, 210);
+            ctx.closePath();
+            ctx.fill();
+
+            // Whiskers
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(350, 300); ctx.lineTo(260, 290);
+            ctx.moveTo(350, 310); ctx.lineTo(250, 320);
+            ctx.moveTo(450, 300); ctx.lineTo(540, 290);
+            ctx.moveTo(450, 310); ctx.lineTo(550, 320);
+            ctx.stroke();
+
+            // Eyes
+            ctx.fillStyle = '#fef08a';
+            ctx.beginPath();
+            ctx.ellipse(360, 275, 14, 20, 0, 0, Math.PI * 2);
+            ctx.ellipse(440, 275, 14, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.ellipse(360, 275, 6, 18, 0, 0, Math.PI * 2);
+            ctx.ellipse(440, 275, 6, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    } else { // car
+        // Background: City sunset street
+        const grad = ctxOrig.createLinearGradient(0, 0, 0, height);
+        grad.addColorStop(0, '#f43f5e');
+        grad.addColorStop(0.6, '#38bdf8');
+        grad.addColorStop(1, '#334155');
+        ctxOrig.fillStyle = grad;
+        ctxOrig.fillRect(0, 0, width, height);
+
+        [ctxOrig, ctxCutout].forEach(ctx => {
+            // Car Body
+            ctx.fillStyle = '#e11d48';
+            ctx.beginPath();
+            ctx.moveTo(180, 380);
+            ctx.quadraticCurveTo(240, 310, 360, 290);
+            ctx.lineTo(520, 290);
+            ctx.quadraticCurveTo(620, 320, 680, 380);
+            ctx.lineTo(180, 380);
+            ctx.closePath();
+            ctx.fill();
+
+            // Roof / Cabin
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.moveTo(320, 290);
+            ctx.lineTo(380, 220);
+            ctx.lineTo(500, 220);
+            ctx.lineTo(550, 290);
+            ctx.closePath();
+            ctx.fill();
+
+            // Wheels
+            ctx.fillStyle = '#18181b';
+            ctx.beginPath();
+            ctx.arc(280, 380, 45, 0, Math.PI * 2);
+            ctx.arc(580, 380, 45, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Rim
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.arc(280, 380, 25, 0, Math.PI * 2);
+            ctx.arc(580, 380, 25, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+
+    const beforeUrl = canvasOrig.toDataURL('image/jpeg', 0.95);
+    const afterUrl = canvasCutout.toDataURL('image/png');
+
+    state.originalImageUrl = beforeUrl;
+    state.processedImageUrl = afterUrl;
+    state.currentFile = { name: `sample_${sampleType}.png` };
+
+    uploadBox.classList.add('hidden');
+    initializeResultView(beforeUrl, afterUrl, '0.42', `Sample ${sampleType.toUpperCase()}`, false, `${width}x${height}`, 'PREMIUM');
+    showToast(`Loaded sample ${sampleType}! Click anywhere on canvas to Erase or Restore.`, 'success');
 }
 
 // ==================== AUTHENTICATION FLOW ====================
@@ -1382,26 +1661,29 @@ function closeModal(modal) {
 
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
-    toast.className = 'flex items-center gap-2 px-3.5 py-2.5 rounded-md bg-white border border-zinc-200 text-zinc-900 shadow-sm text-xs font-medium pointer-events-auto transition-opacity duration-150';
+    toast.className = 'flex items-center gap-2.5 px-4 py-3 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-xl text-xs font-medium pointer-events-auto transition-all duration-200 translate-y-0 opacity-100';
 
     const iconMap = {
-        success: 'check',
-        error: 'alert-circle',
-        info: 'info'
+        success: { icon: 'check-circle-2', color: 'text-emerald-500' },
+        error: { icon: 'alert-circle', color: 'text-rose-500' },
+        info: { icon: 'info', color: 'text-indigo-500' }
     };
 
+    const cfg = iconMap[type] || iconMap.info;
+
     toast.innerHTML = `
-        <i data-lucide="${iconMap[type] || 'info'}" class="w-3.5 h-3.5 shrink-0 text-zinc-600"></i>
-        <span>${escapeHtml(message)}</span>
+        <i data-lucide="${cfg.icon}" class="w-4 h-4 shrink-0 ${cfg.color}"></i>
+        <span class="leading-relaxed">${escapeHtml(message)}</span>
     `;
 
     toastContainer.appendChild(toast);
-    lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
 
     setTimeout(() => {
         toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 150);
-    }, 3500);
+        toast.style.transform = 'translateY(8px)';
+        setTimeout(() => toast.remove(), 200);
+    }, 3800);
 }
 
 function escapeHtml(str) {

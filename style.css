@@ -1,163 +1,347 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==========================================================================
+   PixCut Studio — Design System (Linear / Stripe / Vercel Aesthetic)
+   ========================================================================== */
 
 :root {
-    --bg-page: #fafafa;
-    --bg-card: #ffffff;
-    --border: #e4e4e7;
-    --border-hover: #d4d4d8;
-    --text-primary: #09090b;
-    --text-secondary: #71717a;
-    --text-muted: #a1a1aa;
-    --btn-primary: #09090b;
-    --btn-primary-hover: #27272a;
+  /* Light Theme (Clean Swiss / Stripe Minimal) */
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-hover: #e2e8f0;
+  
+  --border-subtle: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-strong: #94a3b8;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+  
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: #eef2ff;
+  --primary-glow: rgba(99, 102, 241, 0.25);
+  
+  --accent-violet: #7c3aed;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  
+  --checker-light: #ffffff;
+  --checker-dark: #f1f5f9;
 }
 
+/* Dark Mode (Linear / Raycast Sleek #0b0f19) */
+.dark {
+  --bg-page: #0b0f19;
+  --bg-card: #111726;
+  --bg-surface: #151d30;
+  --bg-subtle: #1a233a;
+  --bg-hover: #222d48;
+  
+  --border-subtle: #1e293b;
+  --border-medium: #334155;
+  --border-strong: #475569;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-faint: #475569;
+  
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-light: #1e1b4b;
+  --primary-glow: rgba(129, 140, 248, 0.35);
+  
+  --accent-violet: #a78bfa;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+  
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.6), 0 1px 2px -1px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 8px 10px -6px rgba(0, 0, 0, 0.7);
+  
+  --checker-light: #151d30;
+  --checker-dark: #0f1626;
+}
+
+/* Base Elements */
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: var(--bg-page);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Subtle Dark Checkerboard for High-Contrast Artifact Inspection */
+/* Subtle Linear Ambient Mesh Glow */
+.ambient-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1200px;
+  height: 480px;
+  background: radial-gradient(circle 400px at 50% -50px, rgba(99, 102, 241, 0.12), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .ambient-glow {
+  background: radial-gradient(circle 500px at 50% -50px, rgba(124, 58, 237, 0.18), transparent 75%);
+}
+
+/* Glassmorphism Header */
+.glass-header {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dark .glass-header {
+  background: rgba(11, 15, 25, 0.82);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* High-Precision Checkerboards */
+.checkerboard-grid {
+  background-color: var(--checker-light);
+  background-image: 
+    linear-gradient(45deg, var(--checker-dark) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-dark) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-dark) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-dark) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
 .checkerboard-dark {
-    background-color: #18181b;
-    background-image: 
-        linear-gradient(45deg, #222226 25%, transparent 25%),
-        linear-gradient(-45deg, #222226 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #222226 75%),
-        linear-gradient(-45deg, transparent 75%, #222226 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-color: #0f172a;
+  background-image: 
+    linear-gradient(45deg, #1e293b 25%, transparent 25%),
+    linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1e293b 75%),
+    linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 
-/* Light Checkerboard */
 .checkerboard-light {
-    background-color: #ffffff;
-    background-image: 
-        linear-gradient(45deg, #f4f4f5 25%, transparent 25%),
-        linear-gradient(-45deg, #f4f4f5 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #f4f4f5 75%),
-        linear-gradient(-45deg, transparent 75%, #f4f4f5 75%);
-    background-size: 16px 16px;
-    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+    linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
+    linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 
 /* Solid Canvas Backdrops */
 .canvas-bg-dark {
-    background-color: #18181b !important;
-    background-image: none !important;
+  background-color: #090d16 !important;
+  background-image: none !important;
 }
 
 .canvas-bg-light {
-    background-color: #ffffff !important;
-    background-image: none !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
 }
 
-.canvas-bg-gray {
-    background-color: #52525b !important;
-    background-image: none !important;
+.canvas-bg-studio-gray {
+  background-color: #e2e8f0 !important;
+  background-image: none !important;
 }
 
-/* 2D Flat Card */
-.flat-card {
-    background-color: #ffffff;
-    border: 1px solid #e4e4e7;
-    border-radius: 8px;
+.canvas-bg-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+  background-image: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
 }
 
-/* Minimalist Before / After Comparison Slider */
+/* Primary Linear Action Button */
+.btn-primary-glow {
+  background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary-glow:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-primary-glow:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(99, 102, 241, 0.3);
+}
+
+/* Linear Dropzone */
+.dropzone-box {
+  background: var(--bg-card);
+  border: 1.5px dashed var(--border-medium);
+  border-radius: 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dropzone-box:hover {
+  border-color: #6366f1;
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.12);
+}
+
+.dropzone-active {
+  border-color: #6366f1 !important;
+  background-color: var(--primary-light) !important;
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.22) !important;
+  transform: scale(1.004);
+}
+
+/* Before / After Split Slider */
 .comparison-container {
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    width: 100%;
-    max-height: 560px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    border: 1px solid #e4e4e7;
-    background-color: #18181b;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  width: 100%;
+  max-height: 560px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background-color: #0b0f19;
 }
 
 .comparison-image {
-    display: block;
-    max-width: 100%;
-    max-height: 540px;
-    object-fit: contain;
-    pointer-events: none;
+  display: block;
+  max-width: 100%;
+  max-height: 540px;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .before-image-wrap {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .slider-handle {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: #ffffff;
-    cursor: ew-resize;
-    z-index: 30;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ffffff;
+  cursor: ew-resize;
+  z-index: 30;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 .slider-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    background: #09090b;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: ew-resize;
-    border: 1px solid #3f3f46;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ew-resize;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
 }
 
-/* Drag & Drop Hover */
-.dropzone-active {
-    border-color: #18181b !important;
-    background-color: #f4f4f5 !important;
+.slider-button:hover {
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 /* Range Sliders */
 input[type="range"] {
-    accent-color: #18181b;
+  accent-color: #6366f1;
 }
 
-/* Scrollbar Minimal */
+/* Subtle Shimmer Effect for Pro/Upgrade elements */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  animation: shimmer 2.5s infinite;
+}
+
+/* Sleek Minimal Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #fafafa;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #d4d4d8;
-    border-radius: 3px;
+  background: var(--border-medium);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #a1a1aa;
+  background: var(--border-strong);
+}
+
+/* Keyboard Shortcut Pill */
+kbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-xs);
 }
